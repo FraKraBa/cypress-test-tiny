@@ -1,14 +1,27 @@
-# cypress-test-tiny
+# Bug description
 
-> Tiny Cypress E2E test case
+Cypress claims that the button is not visible although it is visible.
 
-Build status | Name | Description
-:--- | :--- | :---
-[![CircleCI](https://circleci.com/gh/cypress-io/cypress-test-tiny.svg?style=svg)](https://circleci.com/gh/cypress-io/cypress-test-tiny) | CircleCI | Linux & Mac & Win 64
-[![Build status](https://ci.appveyor.com/api/projects/status/er7wpte7j00fsm8d/branch/master?svg=true)](https://ci.appveyor.com/project/cypress-io/cypress-test-tiny-fitqm/branch/master) | AppVeyor | Windows 32-bit
-[![Build status](https://ci.appveyor.com/api/projects/status/bpwo4jpue61xsbi5/branch/master?svg=true)](https://ci.appveyor.com/project/cypress-io/cypress-test-tiny/branch/master) | AppVeyor | Windows 64-bit
-[ ![Codeship Status for cypress-io/cypress-test-tiny](https://app.codeship.com/projects/98843020-d6d6-0135-402d-5207bc7a4d86/status?branch=master)](https://app.codeship.com/projects/263289) | Codeship Basic | Linux Docker
+# How to run this example
 
-## Important
+Run server in root directory with
+node cypress/src/server.js
 
-Note that this project **DOES NOT** include Cypress dependency in the [package.json](package.json). The reason for such omission is that we use this project to test every Cypress build and do not want to spend time installing `cypress@x.x.x` just to immediately install and test `cypress@y.y.y`. Which means when submitting pull requests with a bug report, please save the problematic version of Cypress in `package.json`. Simply run `npm install --save-dev cypress` or `npm i -D cypress@x.x.x` and commit the change before submitting a pull request.
+Run tests in root directory with
+npx cypress run
+
+# Where is the bug?
+
+I debugged a little bit and found the following suspicious function:
+
+```
+const elOrAncestorIsFixed = function ($el) {
+    const $stickyOrFixedEl = $elements.getFirstFixedOrStickyPositionParent($el);
+
+    if ($stickyOrFixedEl) {
+       return $stickyOrFixedEl.css('position') === 'fixed'; // we are sticky => returns false
+    }
+};
+```
+
+In the case presented the button is inside a sticky element. Thus, `elOrAncestorIsFixed` returns false. Afterwards `elIsOutOfBoundsOfAncestorsOverflow` is called and tells that the button is not inside its ancestor Details which has `overflow:scroll`. However, between the button and Details is the model which hat the property `position:fixed`.

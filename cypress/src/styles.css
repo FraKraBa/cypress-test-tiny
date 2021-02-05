@@ -1,0 +1,41 @@
+#parent {
+    display:flex;
+    height: 90vh;
+}
+
+#Preselect {
+    flex:1;
+    background-color:aquamarine;
+    height: 100%;
+
+}
+
+#Details {
+    flex:1;
+    background-color:blue;
+    height: 100%;
+    overflow:scroll;
+}
+
+#modal {
+    background-color: chartreuse;
+    height: 80vh;
+    width: 90%;
+    position: fixed;
+    display: block;
+    left:5%;
+    top:5%;
+}
+
+#sticky {
+    background-color: darkgray;
+    position:sticky;
+    bottom: 10%;
+    width:9%;
+    height:10%;
+}
+
+#button {
+    background-color: darkred;
+    color:white;
+}
